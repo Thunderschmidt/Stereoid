@@ -1,0 +1,41 @@
+# Project: y1
+# Makefile created by Dev-C++ 4.9.8.0
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = obj/inputINI.o obj/input3DO.o obj/y1.o obj/actions.o obj/mathematics.o $(RES)
+LINKOBJ  = obj/inputINI.o obj/input3DO.o obj/y1.o obj/actions.o obj/mathematics.o $(RES)
+LIBS =  -L"C:/MinGW/lib" ../../lib/libaldmd.a ../../lib/libdumbd.a  ../../lib/libagl.a ../../lib/liballeg.a  ../../lib/libuser32.a ../../lib/libgdi32.a ../../lib/libopengl32.a ../../lib/libglu32.a   libcoldet.a ../../lib/libglaux.a   
+INCS = 
+CXXINCS =  -I"C:/MinGW/include/c++" 
+BIN  = y1.exe
+CXXFLAGS = $(CXXINCS)  -lagl -lalleg -luser32 -lgdi32 -lopengl32 -lglu32 -fexceptions -g3
+CFLAGS = $(INCS)  -lagl -lalleg -luser32 -lgdi32 -lopengl32 -lglu32 -fexceptions -g3
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before y1.exe all-after
+
+
+clean: clean-custom
+	rm -f $(OBJ) $(BIN)
+
+$(BIN): $(LINKOBJ)
+	$(CC) $(LINKOBJ) -o "y1.exe" $(LIBS)
+
+obj/inputINI.o: inputINI.c 
+	$(CPP) -c inputINI.c -o obj/inputINI.o $(CXXFLAGS)
+
+obj/input3DO.o: input3DO.c 
+	$(CPP) -c input3DO.c -o obj/input3DO.o $(CXXFLAGS)
+
+obj/y1.o: y1.c 
+	$(CPP) -c y1.c -o obj/y1.o $(CXXFLAGS)
+
+obj/actions.o: actions.c 
+	$(CPP) -c actions.c -o obj/actions.o $(CXXFLAGS)
+
+obj/mathematics.o: mathematics.c 
+	$(CPP) -c mathematics.c -o obj/mathematics.o $(CXXFLAGS)

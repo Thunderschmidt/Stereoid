@@ -1,0 +1,65 @@
+# Project: y1
+# Makefile created by Dev-C++ 4.9.9.1
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = obj/input3DO.o obj/actions.o obj/mat.o obj/drawprim.o obj/stick.o obj/cd.o obj/ships.o obj/y1.o obj/snd.o obj/Trans_3D.o obj/fx.o obj/highw.o obj/ster.o $(RES)
+LINKOBJ  = obj/input3DO.o obj/actions.o obj/mat.o obj/drawprim.o obj/stick.o obj/cd.o obj/ships.o obj/y1.o obj/snd.o obj/Trans_3D.o obj/fx.o obj/highw.o obj/ster.o $(RES)
+LIBS =  -L"C:/MinGW/lib" ../../lib/libaldmd.a ../../lib/libdumbd.a  ../../lib/libagl.a ../../lib/liballeg.a  ../../lib/libuser32.a ../../lib/libgdi32.a ../../lib/libopengl32.a ../../lib/libglu32.a   libcoldet.a ../../lib/libglaux.a   ../../lib/libstdc++.a  -g3 
+INCS = 
+CXXINCS =  -I"C:/MinGW/include/c++" 
+BIN  = y2.exe
+CXXFLAGS = $(CXXINCS)   -fexceptions -g3
+CFLAGS = $(INCS)   -fexceptions -g3
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before y2.exe all-after
+
+
+clean: clean-custom
+	rm -f $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o "y2.exe" $(LIBS)
+
+obj/input3DO.o: input3DO.c coldet.h global.h input3do.h mat.h
+	$(CPP) -c input3DO.c -o obj/input3DO.o $(CXXFLAGS)
+
+obj/actions.o: actions.c coldet.h global.h actions.h mat.h
+	$(CPP) -c actions.c -o obj/actions.o $(CXXFLAGS)
+
+obj/mat.o: mat.c coldet.h global.h mat.h
+	$(CPP) -c mat.c -o obj/mat.o $(CXXFLAGS)
+
+obj/drawprim.o: drawprim.c coldet.h global.h mat.h input3DO.h ster.h   drawprim.h
+	$(CPP) -c drawprim.c -o obj/drawprim.o $(CXXFLAGS)
+
+obj/stick.o: stick.c coldet.h global.h mat.h stick.h
+	$(CPP) -c stick.c -o obj/stick.o $(CXXFLAGS)
+
+obj/cd.o: cd.c coldet.h global.h mat.h cd.h
+	$(CPP) -c cd.c -o obj/cd.o $(CXXFLAGS)
+
+obj/ships.o: ships.c coldet.h global.h input3DO.h actions.h
+	$(CPP) -c ships.c -o obj/ships.o $(CXXFLAGS)
+
+obj/y1.o: y1.c coldet.h global.h input3DO.h actions.h mat.h drawprim.h   stick.h cd.h ships.h snd.h fx.h ster.h highw.h
+	$(CPP) -c y1.c -o obj/y1.o $(CXXFLAGS)
+
+obj/snd.o: snd.c coldet.h global.h mat.h snd.h
+	$(CPP) -c snd.c -o obj/snd.o $(CXXFLAGS)
+
+obj/Trans_3D.o: Trans_3D.cpp Trans_3D.h
+	$(CPP) -c Trans_3D.cpp -o obj/Trans_3D.o $(CXXFLAGS)
+
+obj/fx.o: fx.c coldet.h global.h mat.h input3DO.h drawprim.h actions.h ster.h   fx.h
+	$(CPP) -c fx.c -o obj/fx.o $(CXXFLAGS)
+
+obj/highw.o: highw.c coldet.h global.h mat.h drawprim.h ster.h highw.h
+	$(CPP) -c highw.c -o obj/highw.o $(CXXFLAGS)
+
+obj/ster.o: ster.c coldet.h global.h mat.h Trans_3D.h ster.h
+	$(CPP) -c ster.c -o obj/ster.o $(CXXFLAGS)

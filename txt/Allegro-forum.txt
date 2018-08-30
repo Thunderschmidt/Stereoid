@@ -1,0 +1,783 @@
+Indeed. Compiler your programs with full optimizations like -O2 -ffast-math -fomit-frame-pointer -funroll-loops, and let the compiler do all the optimization i can. If it is still not enough, use a profiler to find the bottle neck. With nowadays processors, it is usually the input/output, not the logic (like loops).
+
+
+++++++++
+
+
+For sin/cos use lookup tables if profiling sais they eat cpu. On modern CPU's there is a special instruction that shoult calculate sin/cos relatively fast.
+
+I think for single pixels putpixel is faster than blit but direct access to memory bitmaps should be faster than anything else
+
+
+++++++++
+
+ Avoid casting too much. When working with floats, make wise use of libm, e.g. use hypotf(x, y) instead of sqrt(x*x + y*y), and atan2(x, y) instead of sin(x/y) / cos(x/y) plus a (y==0) check. It's faster and more precize.
+
+
+++++++++
+
+
+The compiler is your friend, and you can do some friendly things back to help him:
+- Get used to coding const-correctly. Use const whenever it is appropriate. A good compiler will substitute literals for const variables where appropriate.
+- For tight loops and time-critical sections, use the register keywords to indicate which variables you think may profit from being in a register. You should only do this with variables that have a very limited scope.
+- Use the inline keyword for short functions. If they are member functions, put the function body inside the class definition.
+- Chop your code into small functions, preferably no more than one or two screens worth of data (<50 lines). The optimizer can handle short functions better than long ones.
+- Pass large structures by pointer or by reference, small structures by value.
+
+
+
++++++++++
+
+
+As a thumb rule, doing == 0 is faster than comparing against another number.
+
+As another thumb rule, you should focus optimizing for or while cycles than if or switch statements
+
+
+
++++++++
+
+
+SWITCH is faster than else if
+
+
++++++++
+
+glDepthMask(GL_FALSE)  deaktiviert Z-Buffer-writing.
+
+
+++++++++
+
+Hi, I wanna have a large Doom/Descent-like level in my 3D-game.
+Does anybody have an idea how render selection could be done?
+It's important to tell the graphics card only to render the nearby walls, floors, ceilings - but how to do that? 
+
+In my special case the level won't have more than one floor.
+
+One idea are trigger points: "When you're in room no. 5: render level sections 3, 4 and 5"
+
+that's surely difficult and requires a lot of hard-coding
+
+The other idea: Subdividing the level in, let's say, 15X15 meter squares. And then telling the graphics card: "render the 20 squares in front of you"
+
+Does anybody know how modern level design works? What methods do UT, Half Life and so on use? 
+Marcello
+Member# 1,860
+January 2002
+
+
+Posted on 03-17-2005 7:47 PM    
+bsp trees or whatever?
+
+Marcello 
+m hü
+Member# 4,675
+June 2004
+
+
+Posted on 03-17-2005 7:56 PM     
+Yeah, items, walls, ceilings and so on. 
+Steve Terry
+Member# 1,989
+March 2002
+
+
+Posted on 03-17-2005 8:00 PM    
+Doom uses a totally different rendering system than UT or Half Life. Are you wanting this HW accellerated or are you going to have it as a raytracer? There have been some good raytracers written here that run on fairly slow hardware, there was a contest IIRC or something, AYBABTU and 23yrold3yrold made some good ones. 
+
+[ NAS GUI 2/29/04 | My Website ]
+
+Microsoft is not the Borg collective. The Borg collective has got proper networking. - planetspace.de
+Developers developers developers developers!
+OBEY the banana. - Gnolam 
+Marcello
+Member# 1,860
+January 2002
+
+
+Posted on 03-17-2005 8:04 PM    
+You want to use a bsp tree system... google it up and enjoy.
+
+Marcello 
+Trezker
+Member# 1,739
+December 2001
+
+
+Posted on 03-17-2005 8:04 PM    
+raycaster
+And there's one on my website IIRC.
+
+[EDIT]
+It's not much like Doom though. Only works with square blocks. 
+
+\,,/_(`-´)_\,,/
+[Home][Despair][Visual-MinGW][Zoidcom]
+Viva Monster Union! 
+m hü
+Member# 4,675
+June 2004
+
+
+Posted on 03-17-2005 8:16 PM     
+bsp trees? Hm, never heard of it.
+I'll google for it 
+I know RayTracing as a method for creating shadows in rendering programs...
+
+But how does it help with render selection? Is it a kind of ray collision detection for checking if a polygon is visible ore not? 
+Mark Robson
+Member# 2,150
+April 2002
+Posted on 03-17-2005 8:42 PM    
+DOOM uses a 2d BSP tree to split the level (technically, the universe) into sectors and subsectors.
+
+It works out which sector the player's in by walking the BSP tree down the side of each node the player's in.
+
+Then it goes for adjacent sectors until there aren't any more visible ones any more.
+
+Doom is unusual compared to modern games, because it renders front-to-back rather than back-to-front (for floors and walls anyway - THINGS are rendered back-to-front)
+
+The advantage of this approach is it minimises overdrawing and hence memory writes / texture reads, which means that on a slow fillrate GPU (Actually DOOM uses software rendering) it's faster
+
+Mark 
+Krzysztof Kluczek
+Member# 4,191
+January 2004
+
+
+Posted on 03-17-2005 9:07 PM    
+Quote:
+DOOM uses a 2d BSP tree to split the level (technically, the universe) into sectors and subsectors.
+Surely not most recent one. 
+
+
+Quote:
+Doom is unusual compared to modern games, because it renders front-to-back rather than back-to-front
+Rendering front-to-back is the way to go on modern hardware.
+
+
+Most common techniques that I can think of are:
+** Determining visibility - algorithms that remove regions that can't be seen from current camera position
+* PVS (Potentially Visible Sets) - something close to what was already said, when camera is in certain region you know which regions can be visible. Quite simple approach, but writing good algorithm for splitting levels and determining visibility can can cause some problems.
+* Portals - again, level is split into regions, which are connected through portals (usually 3d convex polygons). You can:
+- render invisible portal polygon and check if it's visible, then render region behind it if it is and continue this process (unfortunately, this requires occlusion query GPU ability)
+- calculate portal polygon bounding box and use scissor test to clip what's rendered behind (portals of next region may be all outside portal bounding box, which stops further rendering in this direction)
+
+** Frustum culling - algorithms that remove things outside camera field of view
+* BSP - every node has bounding box, when node is outside frustum, it's not rendered
+* Oct-Tree - method similar to BSP, but uses certain scheme - at every tree level node (cubical region) is divided into 8 smaller cubes (of course only when node is complex enough)
+
+________
+[ My LD48 entry ] [ My SpeedHack`04 entry ] [ TEAM ALLEGRO ] [ My TINS'05 entry - Snake ] 
+Zaphos
+Member# 1,468
+August 2001
+Posted on 03-17-2005 9:13 PM    
+You don't actually want to use the techniques DOOM uses in your game! Instead, I'd recommend you let OpenGL and your graphics card do most of the hard work, and just use frustum culling + perhaps octrees to limit the amount of the scene you render.
+
+(edit: beaten by KK)
+
+edit: KK -- your BSP definition looks wrong. The way I've always seen BSP defined is as a method splitting the world in two parts at each node -- 'in front' of the triangle to which the node corresponds, and 'in back' of the triangle. Triangles which are neither in front or in back will be split into two triangles. This allows fast depth sorting. 
+
+"Them ponies ain't as good at waterslidin' as they think they is." 
+nonnus29
+Member# 2,606
+August 2002
+
+
+Posted on 03-17-2005 11:34 PM    
+Quote:
+Marcello: bsp trees or whatever?
+
+Quote:
+m hü: Yeah, items, walls, ceilings and so on. 
+
+OMG!!!11 That is teh fu|\||\|y!!!!111 
+
+
+------------------------------------------------------
+Java IS faster than C!!! In 3/5 categories anyway...
+My Webpage Is Now Retired 
+Erkle Brown
+Member# 3,493
+May 2003
+
+
+Posted on 03-18-2005 1:32 AM    
+Duke Nukem 3D uses a far better technique than Doom involving sectors.
+Each sector is a closed loop made from a series of walls. Each wall can either be a link to another sector(red in the editor) or a solid wall(white).
+
+1. Add players current sector to render list.
+2. Render first sector in list.
+3. For each visible red wall add linked sector to render list.
+4. Repeat from step 2 until list empty.
+
+Of course the actual render loop works totally differently because of raytracing but I assume you'll be using hardware instead.
+
+Decent uses a similar method but with the addition of an extra dimension making a sector a closed solid instead of a closed loop. Decent 1 and probably 2 adds an extra restriction by forcing the sectors to be cuboids(6 square faces). Of course a cunning level designer will combine cuboids to make better shapes. I have previously used the decent method to achieve zero overdraw, but it can be a little fiddly to edit maps.
+
+EDIT: Yes I know it is called PVS but that name has become associated with Unreal's particular form of PVS. 
+
+
+
+If the writing above has offended you, you've read it wrong.....fool. 
+Krzysztof Kluczek
+Member# 4,191
+January 2004
+
+
+Posted on 03-18-2005 1:59 AM    
+Quote:
+edit: KK -- your BSP definition looks wrong. The way I've always seen BSP defined is as a method splitting the world in two parts at each node -- 'in front' of the triangle to which the node corresponds, and 'in back' of the triangle. Triangles which are neither in front or in back will be split into two triangles. This allows fast depth sorting.
+I've actually assumed that it's known how BSP trees are built and pointed out that they can be used for frustum culling. They are of course useful for other things like collision and raycasting (for shooting or generating lightmaps), but depth-sorting became probably less useful than frustum culling.  Also I usually use Quake 2 (in general all Quakes) BSP trees, which are defined a bit differently:
+- every node is defined as a plane, but doesn't contain any actual geometry (it holds other data, like bounding boxes and additional info for collision detection)
+- every leaf is in fact convex part of space (may be infinite and not closed from all sides), leaves have list of polygons associated with them (as well as other info), but no splitting is done
+- when rendering a map, some polygons may appear more than once in rendered leaves, but simple last_frame variable for every polygon solves the problem
+
+________
+[ My LD48 entry ] [ My SpeedHack`04 entry ] [ TEAM ALLEGRO ] [ My TINS'05 entry - Snake ] 
+Zaphos
+Member# 1,468
+August 2001
+Posted on 03-18-2005 3:34 AM    
+Quote:
+I've actually assumed that it's known how BSP trees are built and pointed out that they can be used for frustum culling
+Heh, right! Thanks -- Your previous post makes a lot more sense now  
+
+"Them ponies ain't as good at waterslidin' as they think they is." 
+Tobias Dammers
+Member# 2,604
+August 2002
+
+
+Posted on 03-18-2005 8:30 AM    
+Quote:
+cuboids(6 square faces)
+
+A closed solid with 6 square faces is called a cube. You probably mean 6 rectangular faces. I'm pretty sure though at least descent 2 allows for more complex shapes. There are lots of tunnels in there that have a hexagon or octagon cross-section, and I don't see you building these out of cuboids. 
+---
+Is there another word for synonym?
+Me make music: Grupo Azúl - Conjunto Con Clave - Raices Sonoras
+"50 pounds == 2.37 backstreet boys" - Chris Katko 
+Kirr
+Member# 5,060
+September 2004
+
+
+Posted on 03-18-2005 9:13 AM    
+I think you guys are scaring him.
+
+
+Quote:
+bsp trees? Hm, never heard of it.
+
+Yeah, start with something simple. Understand completely BSP technique and how it's used in 3D shooters and everything will start making sense. Google will help you, just don't search for "BSP", it's better to search like this. 
+--
+"Go to the NW of Stonemarket Plaza to the Blue Glyph Keeper Library door and enter."
+- Lunabean's Thief Deadly Shadows Walkthrough, day eight 
+m hü
+Member# 4,675
+June 2004
+
+
+Posted on 03-21-2005 1:01 PM      
+Thanks for advice, boys!
+Seems I got a lot to learn now... 
+razor
+Member# 2,256
+April 2002
+
+
+Posted on 03-22-2005 9:46 PM    
+Quote:
+I'm pretty sure though at least descent 2 allows for more complex shapes. There are lots of tunnels in there that have a hexagon or octagon cross-section, and I don't see you building these out of cuboids.
+Ummm, no.. it's all done with cuboids, ever edit one of those levels? It sucks to make those wierd shaped rooms. 
+|BlockGuy| 
+James Howard
+Member# 262
+April 2000
+
+
+Posted on 03-22-2005 11:34 PM    
+Quote:
+Each sector is a closed loop made from a series of walls. Each wall can either be a link to another sector(red in the editor) or a solid wall(white).
+
+1. Add players current sector to render list.
+2. Render first sector in list.
+3. For each visible red wall add linked sector to render list.
+4. Repeat from step 2 until list empty.
+
+
+Just out of curiosity, how do you know if the wall you are rendering is visible, or hidden behind another wall? 
+----
+"You are truly one of the great heroes! The world cheers your name! You get your picture taken with the president! People name their babies after you! You marry a movie star! Yes! You are so cool! THE END"
+"It's 106 miles to Chicago. We've got a full tank of gas, half a pack of cigarettes, it's dark, and we're wearing sunglasses. Hit it." 
+Kitty Cat
+Member# 2,815
+October 2002
+
+
+Posted on 03-23-2005 4:21 AM    
+In Doom, a wall was always vertical and there was nothing beneath floors. IIRC, Doom used a primitive z-buffer-like technique (it didn't use an actual z-buffer, but it stored the vertical strips' positions as it drew front to back) and the floor/ceiling is drawn from the bottom/top of the wall to the bottom/top of the buffer. There was some overdraw but, given the engine, would have been more expensive to fix than just let it happen.
+
+In Duke3D-like games, each see-through "wall" was a portal.. set the clipping area to the wall (which was convex), and draw the area behind it. If another see thorugh wall is in view there, set the clipping area to that (while paying atttention to previous clipping areas) and repeat. Recurse for each wall, and the wall has everything drawn behind it, optionally draw the translucent/transparent texture, then when all the walls are done do the sprites. So, like:
+
+
+draw scene
+{
+set clip to screen
+call draw sector with camera sector
+}
+
+draw sector
+{
+For each wall and visible wall
+   if not solid
+      set clipping area to wall + previous clip
+      call draw sector with sector on the other side
+      restore clipping area
+   if textured
+      draw wall teture
+endloop
+}
+-- 
+"Do not meddle in the affairs of cats, for they are subtle and will pee on your computer." -- Bruce Graham
+Got APEG? 
+Thomas Harte
+Member# 33
+April 2000
+
+
+Posted on 03-25-2005 6:55 PM    
+Quote:
+and the floor/ceiling is drawn from the bottom/top of the wall to the bottom/top of the buffer
+Not quite true. Floors and ceilings are done across lines of constant z (i.e. horizontally) as a post processing effect, with a pixel finding algorithm a lot like a flood fill.
+
+Doom also uses a BSP to draw its world from front to back. That substantially simplifies the processing on the vaguely z-buffer related structure they keep. Note that contrary to popular belief (and one widely read PCGPE article) ray casting is not done in Doom in any real sense.
+
+Duke Nukem actually uses a slightly weird form of portals. They are calculated per vertical slice. For each slice the engine shoots out a ray, Wolfenstein style and figures out which wall of the current sector is hit. If it is a portal, any 'above' and 'below' drawing is done (as sectors may have different heights, we're talking about steps etc) and then the ray heads into the sector connected by the portal. In each portal you can cache which wall was hit by the last ray and test each new ray against it first. Usually you are correct if you are casting rays e.g. from left to right from the point of the observer.
+
+There are no true 3d levels in Duke Nukem 3d, just a wide array of hacks.
+
+Descent also uses portals, but in a true 3d world. It only uses 8 sided sectors as a memory saving device (most information about polygons is implicit) but the same algorithm would work for any connected set of convex sectors. The algorithm is to start with the current sector, set the current clip set to be the view frustum without a near clip plane and draw all solid walls with correct clipping. Then for each portal, clip that polygon to the current clip set, push the current clip set to a stack, use the clipped poly's edges to engineer a new clip set and recurse into that sector. If there is a mask texture (e.g. an opening door) then draw that after the recursion returns.
+
+The major disadvantage of that technique is that you often end up entering the same sector to fill a continuous region of screen area from two different view portals. Imagine standing in a 100% transparent glass cube and looking at a room outside. If each wall of the cube is a different portal then with Descent style drawing you'd end up slicing the outside room down lines deliminating the edges of the glass cube.
+
+Descent avoids this by being tunnel set. That problem rarely happens.
+
+Portals are still quite popular but are used in a different way now. All 3d cards from the last few years have supported an extension that allows the user to query if a given polygon would be visible were it drawn. Most can tell you how many pixels would be visible but that is a slightly newer variation on the same extension. Obviously you just use the z-buffer for polygon sorting now and don't bother with convex sectors but still delimit the borders between sectors by invisible polygons and only draw on if one would be visible. Don't recurse into sectors that have already been drawn.
+
+I've read information that most of the N64 period Nintendo games use a variation on this as the memory footprint for such a scheme is substantially smaller than e.g. a BSP tree.
+
+I have practical experience of implementing all of these if you have any questions. 
+James Howard
+Member# 262
+April 2000
+
+
+Posted on 03-26-2005 1:44 AM    
+Quote:
+All 3d cards from the last few years have supported an extension that allows the user to query if a given polygon would be visible were it drawn.
+
+I'm just curious as I haven't heard of this before.
+Do you know how this would be achieved when using the OpenGL API? Is it an extension which you need to set up yourself (like with shaders for example) or just a standard gl call? How many cards would support this function? 
+----
+"You are truly one of the great heroes! The world cheers your name! You get your picture taken with the president! People name their babies after you! You marry a movie star! Yes! You are so cool! THE END"
+"It's 106 miles to Chicago. We've got a full tank of gas, half a pack of cigarettes, it's dark, and we're wearing sunglasses. Hit it." 
+Thomas Harte
+Member# 33
+April 2000
+
+
+Posted on 03-26-2005 9:58 AM    
+The correct 'modern' way to achieve this in OpenGL is the ARB occlusion query extension. This replaces the nVidial occlusion query extension. Both of those make a count of total pixels that would be drawn.
+
+An older extension that just returns a boolean on whether any pixel would be visible is the HP occlusion test extension.
+
+It is a standard part of OpenGL 2.0, see page 204 of the specification (page 218 of the PDF).
+
+A search of the OpenGL site reveals that this extension doesn't seem to have existed in 1999. Nevertheless, it is supported in hardware by the Voodoo 3 and is definitely supported by the OpenGL implementation on my old Radeon 7500. 
+Krzysztof Kluczek
+Member# 4,191
+January 2004
+
+
+Posted on 03-26-2005 3:28 PM    
+Quote:
+A search of the OpenGL site reveals that this extension doesn't seem to have existed in 1999. Nevertheless, it is supported in hardware by the Voodoo 3 and is definitely supported by the OpenGL implementation on my old Radeon 7500.
+And is not supported by GeForce 2/4MX or earlier. 
+________
+[ My LD48 entry ] [ My SpeedHack`04 entry ] [ TEAM ALLEGRO ] [ My TINS'05 entry - Snake ] 
+Thomas Harte
+Member# 33
+April 2000
+
+
+Posted on 03-26-2005 4:14 PM    
+You're right! How weird given that the query extension (as opposed to test) is an nVidia effort. Looks like you're stuck in the world of doing at least some of your own geometry if you want to use portals on those cards!
+
+Posted on 03/17/2005 12:52 PM    
+Which extensions do you use?
+Which extensions are useful for maximum performance?
+How to include them with AllegroGL?
+
+What are your experiences with them? I'd like to know  
+Steve Terry
+Member# 1,989
+March 2002
+
+
+Posted on 03/17/2005 12:53 PM    
+None so far... I'm still a no0b, but I want to try DOT3 and multitexturing one day.
+
+If you want to see some of my progress:
+
+
+
+Finally managed to get translucent faces to work right... and I had to ENABLE depth testing which is odd because I thought you had to disable it. 
+
+[ NAS GUI 2/29/04 | My Website ]
+
+Microsoft is not the Borg collective. The Borg collective has got proper networking. - planetspace.de
+Developers developers developers developers!
+OBEY the banana. - Gnolam 
+gillius
+Member# 119
+April 2000
+Posted on 03/17/2005 1:00 PM    
+You enable depth testing, but disable depth writing. You render all of your transparent polygons last, and I believe the order does not matter here since depth writing is off but testing is on. 
+
+Gillius
+Gillius's Programming -- New Site: http://www.gillius.org/ 
+Fladimir da Gorf
+Member# 1,565
+October 2001
+
+
+Posted on 03/17/2005 1:01 PM    
+Of course you need to enable depth testing, but not writing! That's because otherwise the transparent polygons would be drawn on everything, and not being able to be hidden behind walls. 
+Oscar Giner
+Member# 2,207
+April 2002
+
+
+Posted on 03/17/2005 1:02 PM    
+Quote:
+and I had to ENABLE depth testing which is odd because I thought you had to disable it.
+
+You have to disable only depth writing, not depth testing. It's not necessary (to disable depth writing), but it'll look better in case you draw some of the translucent polygons in the wrong order.
+
+[edit]
+beaten... twice  
+                                                 
+-----------------------------------------------
+"I once printed the complete sources for a project to transfer it to another machine, because one had a 5,25" drive and the other one a 3,5" one..." - Tobias Dammers
+[www.oginer.tk | e-mail] [Allegro.cc Online Gaming (PM me to register)] [WCG Allegro Team]
+[Tetris Unlimited] [AllegAVI | AlText] 
+Steve Terry
+Member# 1,989
+March 2002
+
+
+Posted on 03/17/2005 1:06 PM    
+Not to hijack the thread but >_<, I learn something new every day... To disable depth writing I use: glDepthMask(GL_FALSE)? 
+
+[ NAS GUI 2/29/04 | My Website ]
+
+Microsoft is not the Borg collective. The Borg collective has got proper networking. - planetspace.de
+Developers developers developers developers!
+OBEY the banana. - Gnolam 
+Oscar Giner
+Member# 2,207
+April 2002
+
+
+Posted on 03/17/2005 1:09 PM    
+Yes.
+
+[edit]
+
+Quote:
+Which extensions do you use?
+
+No one  I've never done anything serious with OpenGL. 
+                                                 
+-----------------------------------------------
+"I once printed the complete sources for a project to transfer it to another machine, because one had a 5,25" drive and the other one a 3,5" one..." - Tobias Dammers
+[www.oginer.tk | e-mail] [Allegro.cc Online Gaming (PM me to register)] [WCG Allegro Team]
+[Tetris Unlimited] [AllegAVI | AlText] 
+Krzysztof Kluczek
+Member# 4,191
+January 2004
+
+
+Posted on 03/17/2005 2:20 PM    
+Quote:
+Which extensions do you use?
+
+GL_ARB_fragment_program *
+GL_ARB_imaging
+GL_ARB_multisample
+GL_ARB_multitexture
+GL_ARB_point_parameters
+GL_ARB_point_sprite
+GL_ARB_texture_cube_map
+GL_ARB_texture_env_combine
+GL_ARB_texture_env_crossbar
+GL_ARB_texture_env_dot3
+GL_ARB_vertex_buffer_object #
+GL_ARB_vertex_program *
+GL_EXT_framebuffer_object @
+
+(no mark) - they used to be extensions, but got integrated with OpenGL 1.4 core or earlier (I may have missed some)
+* - these are true extensions I'm using
+# - this is what you want to boost your performance
+@ - and this is the one I'm going to use once NVidia releases it in non-developer drivers 
+
+
+Quote:
+Which extensions are useful for maximum performance?
+#
+
+
+Quote:
+How to include them with AllegroGL?
+AllegroGL loads automatically all available extensions.
+
+
+Quote:
+What are your experiences with them? I'd like to know 
+You asked for it. 
+
+http://sphere.pl/~krzysiek/index.php?mod=/downloads
+http://www.allegro.cc/forums/view_thread.php?_id=442025
+http://sphere.pl/~krzysiek/files/screens/mr_001.jpg
+
+________
+[ My LD48 entry ] [ My SpeedHack`04 entry ] [ TEAM ALLEGRO ] [ My TINS'05 entry - Snake ] 
+HoHo
+Member# 4,534
+April 2004
+Posted on 03/17/2005 2:23 PM    
+most extensions I use or have used are in core of OpenGL2.0 so they really aren't extensions
+
+i, 
+I wrote a 3D game with Allegro/OpenGL. On some systems it works properly, on other systems the z-buffer just doesn't work - that means: just everything is drawn without a depth check. 
+I tried different z-buffer-depths on those systems, but that didn't help. 
+
+Does anybody know what to do? 
+Steve Terry
+Member# 1,989
+March 2002
+
+
+Posted on 03/14/2005 11:45 AM    
+Did you glEnable(GL_DEPTH_TEST)? 
+
+[ NAS GUI 2/29/04 | My Website ]
+
+Microsoft is not the Borg collective. The Borg collective has got proper networking. - planetspace.de
+Developers developers developers developers!
+OBEY the banana. - Gnolam 
+Oscar Giner
+Member# 2,207
+April 2002
+
+
+Posted on 03/14/2005 12:15 PM    
+Do you clear the z-buffer each frame? 
+                                                 
+-----------------------------------------------
+"I once printed the complete sources for a project to transfer it to another machine, because one had a 5,25" drive and the other one a 3,5" one..." - Tobias Dammers
+[www.oginer.tk | e-mail] [Allegro.cc Online Gaming (PM me to register)] [WCG Allegro Team]
+[Tetris Unlimited] [AllegAVI | AlText] 
+Bob
+Moderator
+Member# 699
+September 2000
+
+
+Posted on 03/14/2005 2:25 PM    
+Quote:
+On some systems it works properly, on other systems the z-buffer just doesn't work 
+Did you ask for a depth buffer? 
+--
+- Bob 
+[ Webpage | Allegro FAQ | Coding Tricks ]
+"Oh, you want to do actual work. In that case, avoid the GameCube at all costs!" - Me 
+m hü
+Member# 4,675
+June 2004
+
+
+Posted on 03/14/2005 3:52 PM    
+I do clear the Depth Buffer, I enable it and I initialize it with
+
+    allegro_gl_clear_settings();
+    set_color_depth(32);
+    allegro_gl_set (AGL_COLOR_DEPTH, 32);
+    allegro_gl_set (AGL_Z_DEPTH, 32);
+    allegro_gl_set (AGL_DOUBLEBUFFER, 1);
+    allegro_gl_set (AGL_RENDERMETHOD, 1);
+    allegro_gl_set (GFX_OPENGL_FULLSCREEN, TRUE);
+    allegro_gl_use_mipmapping(FALSE);
+
+...
+
+But, Bob, what do you mean by "ask for the depth buffer"? Do some machines need a special initialization?
+
+Zaphos
+Member# 1,468
+August 2001
+Posted on 03/14/2005 3:58 PM    
+Shouldn't you also have:
+
+allegro_gl_set(AGL_SUGGEST, AGL_COLOR_DEPTH | AGL_Z_DEPTH | AGL_DOUBLEBUFFER | AGL_RENDERMETHOD | AGL_FULLSCREEN)
+
+
+edit: And it's AGL_FULLSCREEN, not GFX_OPENGL_FULLSCREEN, right? GFX_OPENGL_FULLSCREEN should be used for set_gfx_mode(), which should be called after this init. 
+
+"Them ponies ain't as good at waterslidin' as they think they is." 
+m hü
+Member# 4,675
+June 2004
+
+
+Posted on 03/14/2005 4:26 PM    
+Hm, I changed my code to:
+
+allegro_gl_clear_settings();
+allegro_gl_set(AGL_SUGGEST, AGL_COLOR_DEPTH | AGL_Z_DEPTH | AGL_DOUBLEBUFFER | AGL_RENDERMETHOD | AGL_FULLSCREEN);
+
+set_color_depth(32);
+allegro_gl_set (AGL_COLOR_DEPTH, 32);
+allegro_gl_set (AGL_Z_DEPTH, 32);
+allegro_gl_set (AGL_DOUBLEBUFFER, 1);
+allegro_gl_set (AGL_RENDERMETHOD, 1);
+allegro_gl_set (AGL_FULLSCREEN, TRUE);
+allegro_gl_use_mipmapping(FALSE);
+
+set_gfx_mode(GFX_OPENGL_FULLSCREEN, 1024, 768, 0, 0);
+
+...but it didn't help anything!
+
+Thanks anyway... 
+Bob
+Moderator
+Member# 699
+September 2000
+
+
+Posted on 03/14/2005 4:46 PM    
+Move the suggestion to after you set the settings. 
+--
+- Bob 
+[ Webpage | Allegro FAQ | Coding Tricks ]
+"Oh, you want to do actual work. In that case, avoid the GameCube at all costs!" - Me 
+m hü
+Member# 4,675
+June 2004
+
+
+Posted on 03/15/2005 2:42 AM    
+This code doesn't solve my problem either 
+
+
+<code>
+allegro_gl_clear_settings();
+set_color_depth(32);
+allegro_gl_set (AGL_COLOR_DEPTH, 32);
+allegro_gl_set (AGL_Z_DEPTH, 32);
+allegro_gl_set (AGL_DOUBLEBUFFER, 1);
+allegro_gl_set (AGL_RENDERMETHOD, 1);
+allegro_gl_set (AGL_FULLSCREEN, TRUE);
+allegro_gl_use_mipmapping(FALSE);
+
+set_gfx_mode(GFX_OPENGL_FULLSCREEN, 1024, 768, 0, 0);
+allegro_gl_set(AGL_SUGGEST, AGL_COLOR_DEPTH | AGL_Z_DEPTH | AGL_DOUBLEBUFFER | AGL_RENDERMETHOD | AGL_FULLSCREEN);
+
+glEnable(GL_DEPTH_TEST);
+</code>
+
+
+Could it be a graphics card problem? 
+Kitty Cat
+Member# 2,815
+October 2002
+
+
+Posted on 03/15/2005 2:49 AM    
+Switch set_gfx_mode and allegro_gl_set(AGL_SUGGEST, ...). You're setting the mode before suggesting what to use in the mode. 
+-- 
+"Do not meddle in the affairs of cats, for they are subtle and will pee on your computer." -- Bruce Graham
+Got APEG? 
+m hü
+Member# 4,675
+June 2004
+
+
+Posted on 03/15/2005 6:41 AM    
+Yippeeee! I got it!!!
+
+Yeah, Zaphos, Bob, Kitty Cat: you were absolutely right! The initialization changes made the difference. I just didn't recognize it at once ... I tested the old version all the time, because my compiler didn't perform linking properly... 
+
+Thanks a lot!
+'t define "terrible"... Anyway, maybe anti-aliasing is enabled? AllegroGL seems to want to enable it by default (at least on my setup - a GeForce 6800GT with anti-aliasing set to application-controlled).
+
+Try adding the following before you set graphics mode:
+
+
+allegro_gl_set(AGL_SAMPLE_BUFFERS, 0);
+allegro_gl_set(AGL_SAMPLES, 0);
+
+allegro_gl_set(AGL_SUGGEST, AGL_SAMPLE_BUFFERS | AGL_SAMPLES);
+
+
+BTW, doesn't Windows only support OpenGL in software unless you install your card vendor's driver? Maybe that's your problem...
+
+I think you can check if you got software rendering by querying value
+of AGL_RENDERMETHOD after setting graphics mode, i.e.:
+
+
+if (allegro_gl_get(AGL_RENDERMETHOD))
+{
+    std::cout << "Hurray! We're in business!";
+}
+else
+{
+    std::cout << "Goodbye, cruel world!";
+}
+--
+my website 
+Tobias Dammers
+Member# 2,604
+August 2002
+
+
+Posted on 02-22-2005 8:32 AM    
+Or you can just AGL_REQUIRE hardware-accelerated rendering.
+Anyway, I suggest you find some third-party OpenGL program and test that on the same machines. If that too performs horribly, then OpenGL might not be installed properly. I experienced this on my system after installing a second graphics card (PCI), which caused a hardware conflict that windows did not detect properly. My primary nvidia card (GF Ti4200) wasn't recognized properly anymore, and as a result, windows used the standard software-rendering opengl. I got frame rates around 5 Hz with the average opengl application. So if that's the problem, re-installing the proper drivers may solve the problem. 
+---
+Is there another word for synonym?
+Me make music: Grupo Azúl - Conjunto Con Clave - Raices Sonoras
+"50 pounds == 2.37 backstreet boys" - Chris Katko 
+razor
+Member# 2,256
+April 2002
+
+
+Posted on 02-22-2005 12:29 PM    
+Yeah, the windows openGL system is really slow. Most the computers at my school use it, and so anything I make that uses openGL gets like 5fps (even though I only draw like 100 - 300 quads). 
+|BlockGuy| 
+m hü
+Member# 4,675
+June 2004
+
+
+Posted on 02-23-2005 10:06 PM      
+Thanks for advice!
+
+I guess the problem is that the hardware acceleration just doesn't start. I'll try installing the newest vendor's drivers first... 
+    
+
+

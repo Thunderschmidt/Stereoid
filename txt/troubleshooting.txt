@@ -1,0 +1,37 @@
+                                              __ 
+        ______   __               _____      /\_\     __  
+       /\  ___\ /\ \__           /\  __\     \/_/    /\ \ 
+      _\ \ \____\ \  _\    __  ____\ \__    ___  __  \_\ \
+      \ \ \____ \\ \ \/  /'__'\\  _\\  _\  / __'\\ \ / __ \
+       \ \/____\ \\_\ \__\  __/ \ \/ \ \___\ \_\ \\ \\ \L\ \
+        \_ /\_____\\_____\\_____ \_\\ \____\\____/ \_\\____/
+          _\/_____//_____//____/\/_/ \/____//___/ \/_//___/ 
+          \______\\_____\\____\ \_\ \_____\\___\ \_\\____\ -by M. Hüdepohl
+
+                        - TROUBLESHOOTING FAQ -
+
+
+Q: My screen flickers while the program is running.
+A: That's a driver problem. Some drivers lower the screen refresh
+   rate to 60 Hz, whenever the screen resolution changes. For Nvidia
+   cards, the Nvidia 60Hz-Bugfix may help. Otherwise: start Stereoid,
+   press strg-Esc, change the refresh rate manually and return to the
+   program.
+
+Q: The game screen is so low-contrast, I can't hardly see anything.
+A: Yeah, the game is low-contrast - otherwise, the stereo-seperation
+   couldn't work. Try:
+   1. Darkening your room
+   2. Cleaning your stereo-glasses
+   3. cleaning your monitor
+
+Q: My stereo-glasses don't seperate properly. I see the red image
+   through the green/blue foil, and the blue one through the red
+   foil.
+   Do the following:
+   1. Put on your stereo glasses
+   2. Look at a Stereoid stereo image on your screen
+   3. Close the left eye
+   4. Alter your monitor's brightness, until the red image dissolves
+      best possible
+

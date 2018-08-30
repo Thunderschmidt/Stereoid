@@ -1,0 +1,60 @@
+# Project: y1
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = obj/input3DO.o obj/harbst.o obj/mat.o obj/drawprim.o obj/stick.o obj/cd.o obj/ships.o obj/y1.o obj/snd.o obj/Trans_3D.o obj/fx.o $(RES)
+LINKOBJ  = obj/input3DO.o obj/harbst.o obj/mat.o obj/drawprim.o obj/stick.o obj/cd.o obj/ships.o obj/y1.o obj/snd.o obj/Trans_3D.o obj/fx.o $(RES)
+LIBS =  -L"D:/Dev-Cpp/lib" ../../lib/libaldmd.a ../../lib/libdumbd.a  ../../lib/libagl.a ../../lib/liballeg.a  ../../lib/libuser32.a ../../lib/libgdi32.a ../../lib/libopengl32.a ../../lib/libglu32.a   libcoldet.a ../../lib/libglaux.a   ../../lib/libstdc++.a  -g3 
+INCS =  -I"D:/Dev-Cpp/include" 
+CXXINCS =  -I"D:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"D:/Dev-Cpp/include/c++/3.4.2/backward"  -I"D:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"D:/Dev-Cpp/include/c++/3.4.2"  -I"D:/Dev-Cpp/include" 
+BIN  = y2.exe
+CXXFLAGS = $(CXXINCS)   -fexceptions -g3
+CFLAGS = $(INCS)   -fexceptions -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before y2.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o "y2.exe" $(LIBS)
+
+obj/input3DO.o: input3DO.c
+	$(CPP) -c input3DO.c -o obj/input3DO.o $(CXXFLAGS)
+
+obj/harbst.o: harbst.c
+	$(CPP) -c harbst.c -o obj/harbst.o $(CXXFLAGS)
+
+obj/mat.o: mat.c
+	$(CPP) -c mat.c -o obj/mat.o $(CXXFLAGS)
+
+obj/drawprim.o: drawprim.c
+	$(CPP) -c drawprim.c -o obj/drawprim.o $(CXXFLAGS)
+
+obj/stick.o: stick.c
+	$(CPP) -c stick.c -o obj/stick.o $(CXXFLAGS)
+
+obj/cd.o: cd.c
+	$(CPP) -c cd.c -o obj/cd.o $(CXXFLAGS)
+
+obj/ships.o: ships.c
+	$(CPP) -c ships.c -o obj/ships.o $(CXXFLAGS)
+
+obj/y1.o: y1.c
+	$(CPP) -c y1.c -o obj/y1.o $(CXXFLAGS)
+
+obj/snd.o: snd.c
+	$(CPP) -c snd.c -o obj/snd.o $(CXXFLAGS)
+
+obj/Trans_3D.o: Trans_3D.cpp
+	$(CPP) -c Trans_3D.cpp -o obj/Trans_3D.o $(CXXFLAGS)
+
+obj/fx.o: fx.c
+	$(CPP) -c fx.c -o obj/fx.o $(CXXFLAGS)

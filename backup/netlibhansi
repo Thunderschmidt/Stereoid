@@ -1,0 +1,46 @@
+
+
+
+//-------------------------------------------------------------------------------------------
+// Network recieve interface
+
+/* 
+ * Handler for Text Messages 
+ */
+void handleTextPacket(Connection& conn, Packet::sptr packet) {
+    TextPacket::sptr textMessage = static_pointer_cast<TextPacket>( packet );                
+    // TODO: Read the fucking Message                
+    mprintf("got message: \"%s\"\n", textMessage->getMessage().c_str());
+    //gout << "got message: " << textMessage->getMessage().c_str() << endl;
+    
+/*
+    TextPacket response("Acknowledge!");
+    conn.stream().writePacket(response, true);
+*/
+}
+
+/* 
+ * Packet Parser, to be called from the Net_Engine if there are Packets recieved 
+ */
+void thePacketParser(Connection& conn, Packet::sptr packet){
+    int ID;
+    ID = packet->getType();
+    switch(ID) {
+        case PKT_ID_TEXT:
+            handleTextPacket(conn, packet);
+            break;
+        
+        case PKT_ID_INT:
+            break;
+                                
+        default:
+            mprintf("got bad packet.\n");
+    }    // switch(ID)
+;
+}
+
+
+
+
+
+

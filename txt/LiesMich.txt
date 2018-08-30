@@ -1,0 +1,91 @@
+                                              __ 
+        ______   __               _____      /\_\     __  
+       /\  ___\ /\ \__           /\  __\     \/_/    /\ \ 
+      _\ \ \____\ \  _\    __  ____\ \__    ___  __  \_\ \
+      \#\ \____ \\ \ \/  /'__'\\  _\\  _\  / __'\\ \ / __ \
+       \#\/____\ \\_\ \__\  __/ \ \/ \ \___\ \_\ \\ \\ \L\ \
+        \##/\_____\\_____\\_____ \_\\ \____\\____/ \_\\____/
+          _\/_____//_____//____/\/_/#\/____//___/#\/_//___/ 
+          \######\\#####\\####\ \#\ \#####\\###\ \#\\####\
+
+Testversion Nr. 3
+
+Probleme & Lösungen
+-------------------
+
+P: Das Spiel flimmert fürchterlich!
+L: Bei Kathodenstrahlröhren-Monitoren kann es sein, daß die Bildwiederholfrequenz
+   auf 60 Hz gesenkt wird und das Bild anfängt zu flackern. Das ist ein Grafikkartentreiber-Problem.
+   Für Nvidia-Karten gibt es den Nvidia 60Hz-Bugfix. Für andere Karten ist die Installation des
+   aktuellsten Hersteller-Treibers zu empfehlen.
+
+P: Ich kann kaum was erkennen!
+L: Alles Stereoskopische wird relativ dunkel dargestellt, andernfalls würde die Rot/Grün-Trennung
+   nicht mehr funktionieren. Infolgedessen sind Umrisse manchmal schwer zu erkennen. Deshalb wird
+   empfohlen, das Zimmer abzudunkeln und die 3D-Brille von Verunreinigungen freizuhalten.
+
+P: Die Rot/Grün-Trennung funktioniert kaum!
+L: Oft sieht man durch das grüne Folie (rechtes Auge) einen starken grauen Schatten des Bildes
+   für das linke Auge. Das liegt daran, daß jeder Monitor unterschiedlich ist und die Stereo-
+   Farbumrechnungstabelle für jeden Monitor individuell angepaßt werden muß.
+   Das unterstützt die aktuelle Version noch nicht.
+   Bis jetzt kann Abhilfe wie folgt geschaffen werden, indem man den Monitor zur Laufzeit des Programmes
+   mit geschlossenem linken Auge betrachtet und den Helligkeitsregler soweit verstellt, bis der Schatten
+   des "linken" Bildes bestmöglich verschwindet.
+
+P: Das Spiel ist viel zu langsam!
+L: Das Spiel läuft z.Z. nur auf Rechnern > 1 Ghz wirklich flüssig. Sollte es aber so richtig langsam
+   sein, so bei 3 Bildern pro Sekunde, dann läuft die Hardwarebeschleunigung nicht. Das kann in den
+   meisten Fällen durch einen neuen Grafikkartentreiber behoben werden.
+
+P: Ich sehe Objekte, die eigentlich durch davorliegende Objekte oder Flächen verdeckt sein müßten!
+L: Das ist ein softwareseitiger Fehler, der auf manchen Systemen auftaucht und in der nächsten
+   Version beseitigt sein wird...
+
+P: Ich höre keinen Sound / der Sound ist zu laut
+L: Ebenfalls ein softwareseitiger Fehler. Schon so gut wie behoben.
+
+
+Tastenbelegung
+--------------
+
+Joystick ist empfohlen
+
+Pfeiltasten  -  Lenken
+[BACKSPACE]  -  voller Schub
+[0]          -  Schub auf null
+[+]          -  Schub erhöhen
+[-]          -  Schub verringern
+
+[x]          -  Laser kombinieren
+[m]          -  Rakete auswählen
+[SPACE]      -  Schießen
+
+
+[t]          -  Ziele vorwärts durchschalten
+[z]          -  Ziele rückärts durchschalten
+[r]          -  nächstes Ziel
+[o]          -  Ziel löschen
+
+[d]          -  Geröll an- und ausschalten
+[b]          -  Hintergrund an- und ausschalten
+
+[e]          - Augenabstand verändern
+[s]          - globale Skalierung verändern
+
+[g]          - Landekufen ausfahren
+
+
+[f1]         -  Testeinheit fährt Landekufen aus
+[f2]         -      "          "     "       ein
+[f3]         -      "       feuert Laser
+[f4]         -      "          "   Rakete
+[f5]         -      "       öffnet   Kanzel
+[f6]         -      "       schließt   "
+[f7]         -      "       rotiert
+[f8]         -      "       stoppt
+[f9]         -      "       feuert Zielsuch-Rakete
+
+
+
+15.03.05 Martin Hüdepohl

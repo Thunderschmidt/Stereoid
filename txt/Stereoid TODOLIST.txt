@@ -1,0 +1,34 @@
+
+                                              __ 
+        ______   __               _____      /\_\     __  
+       /\  ___\ /\ \__           /\  __\     \/_/    /\ \ 
+      _\ \ \____\ \  _\    __  ____\ \__    ___  __  \_\ \
+      \ \ \____ \\ \ \/  /'__'\\  _\\  _\  / __'\\ \ / __ \
+       \ \/____\ \\_\ \__\  __/ \ \/ \ \___\ \_\ \\ \\ \L\ \
+        \_ /\_____\\_____\\_____ \_\\ \____\\____/ \_\\____/
+          _\/_____//_____//____/\/_/ \/____//___/ \/_//___/ 
+          \______\\_____\\____\ \_\ \_____\\___\ \_\\____\
+					                  
+
+
+  Was braucht das Programm noch?
+
+-Kollisionsabfrage Objekt/Objekt und Objekt/Level
+
+-Kollisionsabfrage Schuß/Level nur ein einziges Mal
+
+-Schwerkraft: Energieerhaltung/ Impulserhaltung
+
+-elektronische See
+
+-Netzwerkunterstützung 
+
+-BSP trees für Level-render-selection
+
+-beschleunigende Datenautobahnen
+
+-Umrechnungstabellen-Umschaltung während der Laufzeit
+
+-Profiler-Checks, Optimierung
+
+-einbinden der boost-library für besseres Datenmanagement
